@@ -262,6 +262,7 @@ class _MirrorState extends State<MyApp> {
                       ),
                     ),
                     Wrap(
+                      textDirection: ltr? TextDirection.ltr:TextDirection.rtl,
                       runSpacing: 50,
                       spacing: 50,
                       children: [
