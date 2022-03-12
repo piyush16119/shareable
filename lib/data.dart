@@ -1,0 +1,33 @@
+class Data {
+  String home,
+      information,
+      setting,
+      report,
+      logout,
+      tab,
+      image,
+      hotel,
+      contact,
+      card1,
+      card2,
+      card3,
+      card4,
+      card5,
+      email;
+  Data(
+      {required this.home,
+      required this.information,
+      required this.setting,
+      required this.report,
+      required this.logout,
+      required this.tab,
+      required this.hotel,
+      required this.image,
+      required this.card1,
+      required this.card2,
+      required this.card3,
+      required this.card4,
+      required this.card5,
+      required this.contact,
+      required this.email});
+}
