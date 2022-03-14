@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:oneweb/api_for_dart.dart';
+import 'package:oneweb/appbar/appbar_segment.dart';
 import 'package:oneweb/data.dart';
+import 'package:oneweb/drawer.dart';
 
 void main() {
   runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
@@ -14,11 +16,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MirrorState extends State<MyApp> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool ltr = true;
   bool tab1hover = false, tab2hover = false, tab3hover = false;
   bool tab1 = true, tab2 = false, tab3 = false;
   late Data data;
   late String language;
+  bool leftDrawer = false;
+  bool rightDrawer = false;
   @override
   void initState() {
     super.initState();
@@ -26,15 +31,25 @@ class _MirrorState extends State<MyApp> {
     language = 'en_Us';
     ltr = Information.getData(language);
     data = Information.textData;
+    AppBarSegment.setDirection(ltr);
   }
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    TextDirection direction = ltr ? TextDirection.ltr : TextDirection.rtl;
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: DrawerSection(ltr: ltr, menu: ltr ? true : false),
+      endDrawer: DrawerSection(ltr: ltr, menu: ltr ? false : true),
       appBar: AppBar(
+        leading: AppBarSegment.getLeading(
+            ltr, _scaffoldKey, ltr ? size.width < 1000 : size.width < 700),
+        actions: AppBarSegment.getActions(
+            ltr, _scaffoldKey, ltr ? size.width < 700 : size.width < 1000),
         title: Text(
           'MyApp Image',
-          textDirection: ltr ? TextDirection.ltr : TextDirection.rtl,
+          textDirection: direction,
         ),
         centerTitle: true,
       ),
@@ -46,6 +61,7 @@ class _MirrorState extends State<MyApp> {
               language = ltr ? '' : 'en_Us';
               ltr = Information.getData(language);
               data = Information.textData;
+              AppBarSegment.setDirection(ltr);
             });
           },
           child: const Icon(
@@ -58,108 +74,99 @@ class _MirrorState extends State<MyApp> {
         color: Colors.black12,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          textDirection: ltr ? TextDirection.ltr : TextDirection.rtl,
+          textDirection: direction,
           children: [
-            Container(
-              color: Colors.white,
-              height: MediaQuery.of(context).size.height,
-              width: 150,
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  Row(
-                    textDirection: ltr ? TextDirection.ltr : TextDirection.rtl,
-                    children: [
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      const Icon(
-                        Icons.home_outlined,
-                        color: Colors.green,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(data.home,
-                          textDirection:
-                              ltr ? TextDirection.ltr : TextDirection.rtl),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    textDirection: ltr ? TextDirection.ltr : TextDirection.rtl,
-                    children: [
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      const Icon(
-                        Icons.info_outline,
-                        color: Colors.blueGrey,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(data.information,
-                          textDirection:
-                              ltr ? TextDirection.ltr : TextDirection.rtl),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    textDirection: ltr ? TextDirection.ltr : TextDirection.rtl,
-                    children: [
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      const Icon(
-                        Icons.settings,
-                        color: Colors.blue,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(data.setting,
-                          textDirection:
-                              ltr ? TextDirection.ltr : TextDirection.rtl),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    textDirection: ltr ? TextDirection.ltr : TextDirection.rtl,
-                    children: [
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      const Icon(
-                        Icons.report_problem_outlined,
-                        color: Colors.yellow,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(data.report,
-                          textDirection:
-                              ltr ? TextDirection.ltr : TextDirection.rtl),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    textDirection: ltr ? TextDirection.ltr : TextDirection.rtl,
-                    children: [
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      RotatedBox(
-                          quarterTurns: ltr ? 0 : 90,
-                          child: const Icon(
-                            Icons.logout,
-                            color: Colors.red,
-                          )),
-                      const SizedBox(width: 5),
-                      Text(data.logout,
-                          textDirection:
-                              ltr ? TextDirection.ltr : TextDirection.rtl),
-                    ],
-                  ),
-                ],
+            if (size.width >= 1000)
+              Container(
+                color: Colors.white,
+                height: MediaQuery.of(context).size.height,
+                width: 150,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Row(
+                      textDirection: direction,
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        const Icon(
+                          Icons.home_outlined,
+                          color: Colors.green,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(data.home, textDirection: direction),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      textDirection: direction,
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        const Icon(
+                          Icons.info_outline,
+                          color: Colors.blueGrey,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(data.information, textDirection: direction),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      textDirection: direction,
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        const Icon(
+                          Icons.settings,
+                          color: Colors.blue,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(data.setting, textDirection: direction),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      textDirection: direction,
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        const Icon(
+                          Icons.report_problem_outlined,
+                          color: Colors.yellow,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(data.report, textDirection: direction),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      textDirection: direction,
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        RotatedBox(
+                            quarterTurns: ltr ? 0 : 90,
+                            child: const Icon(
+                              Icons.logout,
+                              color: Colors.red,
+                            )),
+                        const SizedBox(width: 5),
+                        Text(data.logout, textDirection: direction),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
-                  textDirection: ltr ? TextDirection.ltr : TextDirection.rtl,
+                  textDirection: direction,
                   children: [
                     Container(
                         margin: const EdgeInsets.fromLTRB(30, 20, 30, 0),
@@ -262,7 +269,7 @@ class _MirrorState extends State<MyApp> {
                       ),
                     ),
                     Wrap(
-                      textDirection: ltr? TextDirection.ltr:TextDirection.rtl,
+                      textDirection: direction,
                       runSpacing: 50,
                       spacing: 50,
                       children: [
@@ -272,8 +279,7 @@ class _MirrorState extends State<MyApp> {
                           height: 100,
                           color: Colors.white,
                           child: Column(
-                            textDirection:
-                                ltr ? TextDirection.ltr : TextDirection.rtl,
+                            textDirection: direction,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -283,8 +289,7 @@ class _MirrorState extends State<MyApp> {
                                     fontWeight: FontWeight.bold),
                               ),
                               Row(
-                                textDirection:
-                                    ltr ? TextDirection.ltr : TextDirection.rtl,
+                                textDirection: direction,
                                 children: [
                                   RotatedBox(
                                     quarterTurns: ltr ? 0 : 135,
@@ -298,8 +303,7 @@ class _MirrorState extends State<MyApp> {
                                 ],
                               ),
                               Row(
-                                textDirection:
-                                    ltr ? TextDirection.ltr : TextDirection.rtl,
+                                textDirection: direction,
                                 children: [
                                   const Icon(
                                     Icons.mail,
@@ -318,8 +322,7 @@ class _MirrorState extends State<MyApp> {
                           height: 100,
                           color: Colors.white,
                           child: Column(
-                            textDirection:
-                                ltr ? TextDirection.ltr : TextDirection.rtl,
+                            textDirection: direction,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -329,9 +332,8 @@ class _MirrorState extends State<MyApp> {
                                     fontWeight: FontWeight.bold),
                               ),
                               Row(
-                                textDirection:
-                                    ltr ? TextDirection.ltr : TextDirection.rtl,
-                                children:  [
+                                textDirection: direction,
+                                children: [
                                   RotatedBox(
                                     quarterTurns: ltr ? 0 : 135,
                                     child: const Icon(
@@ -344,8 +346,7 @@ class _MirrorState extends State<MyApp> {
                                 ],
                               ),
                               Row(
-                                textDirection:
-                                    ltr ? TextDirection.ltr : TextDirection.rtl,
+                                textDirection: direction,
                                 children: [
                                   const Icon(
                                     Icons.mail,
@@ -364,8 +365,7 @@ class _MirrorState extends State<MyApp> {
                           height: 100,
                           color: Colors.white,
                           child: Column(
-                            textDirection:
-                                ltr ? TextDirection.ltr : TextDirection.rtl,
+                            textDirection: direction,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -375,9 +375,8 @@ class _MirrorState extends State<MyApp> {
                                     fontWeight: FontWeight.bold),
                               ),
                               Row(
-                                textDirection:
-                                    ltr ? TextDirection.ltr : TextDirection.rtl,
-                                children:  [
+                                textDirection: direction,
+                                children: [
                                   RotatedBox(
                                     quarterTurns: ltr ? 0 : 135,
                                     child: const Icon(
@@ -390,8 +389,7 @@ class _MirrorState extends State<MyApp> {
                                 ],
                               ),
                               Row(
-                                textDirection:
-                                    ltr ? TextDirection.ltr : TextDirection.rtl,
+                                textDirection: direction,
                                 children: [
                                   const Icon(
                                     Icons.mail,
@@ -410,8 +408,7 @@ class _MirrorState extends State<MyApp> {
                           height: 70,
                           color: Colors.white,
                           child: Column(
-                            textDirection:
-                                ltr ? TextDirection.ltr : TextDirection.rtl,
+                            textDirection: direction,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -421,9 +418,8 @@ class _MirrorState extends State<MyApp> {
                                     fontWeight: FontWeight.bold),
                               ),
                               Row(
-                                textDirection:
-                                    ltr ? TextDirection.ltr : TextDirection.rtl,
-                                children:  [
+                                textDirection: direction,
+                                children: [
                                   RotatedBox(
                                     quarterTurns: ltr ? 0 : 135,
                                     child: const Icon(
@@ -444,8 +440,7 @@ class _MirrorState extends State<MyApp> {
                           height: 70,
                           color: Colors.white,
                           child: Column(
-                            textDirection:
-                                ltr ? TextDirection.ltr : TextDirection.rtl,
+                            textDirection: direction,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -455,9 +450,8 @@ class _MirrorState extends State<MyApp> {
                                     fontWeight: FontWeight.bold),
                               ),
                               Row(
-                                textDirection:
-                                    ltr ? TextDirection.ltr : TextDirection.rtl,
-                                children:  [
+                                textDirection: direction,
+                                children: [
                                   RotatedBox(
                                     quarterTurns: ltr ? 0 : 135,
                                     child: const Icon(
@@ -479,141 +473,141 @@ class _MirrorState extends State<MyApp> {
                 ),
               ),
             ),
-            Container(
-              color: Colors.white,
-              width: 300,
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: 300,
-                    child: Wrap(
-                      textDirection:
-                          ltr ? TextDirection.ltr : TextDirection.rtl,
-                      alignment: WrapAlignment.spaceEvenly,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              tab1 = true;
-                              tab2 = false;
-                              tab3 = false;
-                            });
-                          },
-                          onHover: (val) {
-                            setState(() {
-                              if (val) {
-                                tab1hover = true;
-                                tab2hover = false;
-                                tab3hover = false;
-                              } else {
-                                tab1hover = false;
-                                tab2hover = false;
-                                tab3hover = false;
-                              }
-                            });
-                          },
-                          child: SizedBox(
-                            height: 30,
-                            width: 50,
-                            child: Column(
-                              children: [
-                                Text('${data.tab} 1'),
-                                const Spacer(),
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  color: Colors.blue,
-                                  width: tab1 || tab1hover ? 50 : 0,
-                                  height: 2,
-                                )
-                              ],
+            if (size.width >= 700)
+              Container(
+                color: Colors.white,
+                width: 300,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: 300,
+                      child: Wrap(
+                        textDirection: direction,
+                        alignment: WrapAlignment.spaceEvenly,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                tab1 = true;
+                                tab2 = false;
+                                tab3 = false;
+                              });
+                            },
+                            onHover: (val) {
+                              setState(() {
+                                if (val) {
+                                  tab1hover = true;
+                                  tab2hover = false;
+                                  tab3hover = false;
+                                } else {
+                                  tab1hover = false;
+                                  tab2hover = false;
+                                  tab3hover = false;
+                                }
+                              });
+                            },
+                            child: SizedBox(
+                              height: 30,
+                              width: 50,
+                              child: Column(
+                                children: [
+                                  Text('${data.tab} 1'),
+                                  const Spacer(),
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    color: Colors.blue,
+                                    width: tab1 || tab1hover ? 50 : 0,
+                                    height: 2,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              tab2 = true;
-                              tab3 = false;
-                              tab1 = false;
-                            });
-                          },
-                          onHover: (val) {
-                            setState(() {
-                              if (val) {
-                                tab2hover = true;
-                                tab1hover = false;
-                                tab3hover = false;
-                              } else {
-                                tab1hover = false;
-                                tab2hover = false;
-                                tab3hover = false;
-                              }
-                            });
-                          },
-                          child: SizedBox(
-                            height: 30,
-                            width: 50,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('${data.tab} 2'),
-                                const Spacer(),
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  color: Colors.blue,
-                                  width: tab2 || tab2hover ? 50 : 0,
-                                  height: 2,
-                                )
-                              ],
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                tab2 = true;
+                                tab3 = false;
+                                tab1 = false;
+                              });
+                            },
+                            onHover: (val) {
+                              setState(() {
+                                if (val) {
+                                  tab2hover = true;
+                                  tab1hover = false;
+                                  tab3hover = false;
+                                } else {
+                                  tab1hover = false;
+                                  tab2hover = false;
+                                  tab3hover = false;
+                                }
+                              });
+                            },
+                            child: SizedBox(
+                              height: 30,
+                              width: 50,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('${data.tab} 2'),
+                                  const Spacer(),
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    color: Colors.blue,
+                                    width: tab2 || tab2hover ? 50 : 0,
+                                    height: 2,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              tab3 = true;
-                              tab2 = false;
-                              tab1 = false;
-                            });
-                          },
-                          onHover: (val) {
-                            setState(() {
-                              if (val) {
-                                tab3hover = true;
-                                tab2hover = false;
-                                tab1hover = false;
-                              } else {
-                                tab1hover = false;
-                                tab2hover = false;
-                                tab3hover = false;
-                              }
-                            });
-                          },
-                          child: SizedBox(
-                            height: 30,
-                            width: 50,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('${data.tab} 3'),
-                                const Spacer(),
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  color: Colors.blue,
-                                  width: tab3 || tab3hover ? 50 : 0,
-                                  height: 2,
-                                )
-                              ],
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                tab3 = true;
+                                tab2 = false;
+                                tab1 = false;
+                              });
+                            },
+                            onHover: (val) {
+                              setState(() {
+                                if (val) {
+                                  tab3hover = true;
+                                  tab2hover = false;
+                                  tab1hover = false;
+                                } else {
+                                  tab1hover = false;
+                                  tab2hover = false;
+                                  tab3hover = false;
+                                }
+                              });
+                            },
+                            child: SizedBox(
+                              height: 30,
+                              width: 50,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('${data.tab} 3'),
+                                  const Spacer(),
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    color: Colors.blue,
+                                    width: tab3 || tab3hover ? 50 : 0,
+                                    height: 2,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            )
+                  ],
+                ),
+              )
             // Container(
             //   color: Colors.red,
             //   width: 100,
